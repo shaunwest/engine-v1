@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom/server';
 
 import colors from 'colors';
 
-import foo from './foo';
+import main from './main';
 
 const app = koa();
 const hostname = process.env.HOSTNAME || 'localhost';
@@ -25,7 +25,7 @@ function run(externalCss, assetUrl = 'http://localhost:1335') {
 
   app.use(function *() {
       yield (callback => {
-          const reactString = ReactDOM.renderToString(React.createElement(foo));
+          const reactString = ReactDOM.renderToString(React.createElement(main));
 
           this.type = 'text/html';
           this.body = (
@@ -38,7 +38,6 @@ function run(externalCss, assetUrl = 'http://localhost:1335') {
                       ${ cssLink }
                   </head>
                   <body>
-                      <h1>Hello!!!</h1>
                       <div id='react-root'>${ reactString }</div>
                   </body>
                   <script>
