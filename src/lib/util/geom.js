@@ -1,8 +1,3 @@
-/**
- * Created by shaunwest on 11/27/15.
- */
-
-// TODO: not really performant for game engine due to GC caused by creating new objects
 
 export function point(x = 0, y = 0) {
   return {

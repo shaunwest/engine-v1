@@ -1,10 +1,17 @@
 /**
  * Created by shaunwest on 11/27/15.
+ *
+ * FIXME: the event loop shouldn't rely on the update()
+ * function. It can just make a call to get "values" when
+ * it needs the information.
+ * So... return a getValues() function or something.
+ * The update() function could still be optional though
+ *
  */
 
 import { point } from './util/geom.js';
 
-export default function Inputer(targetElement, update, translator) {
+export default function Inputer(targetElement, update = function() {}) {
   const values = {
     isPressed: false,
     isActive: false,
@@ -13,48 +20,40 @@ export default function Inputer(targetElement, update, translator) {
     lastPosition: null
   };
 
-  const getPosition = (x, y) => (translator) ? translator(x, y, targetElement) : point(x, y);
+  //const getPosition = (x, y) => (translator) ? translator(x, y, targetElement) : point(x, y);
 
   // PRESS
   targetElement.addEventListener('mousedown', event => {
-    const mouseLocation = getPosition(event.clientX, event.clientY);
-
     values.isActive = true;
-    values.position = values.initialPressPosition = mouseLocation;
+    values.position = values.initialPressPosition = point(event.clientX, event.clientY);
     values.isPressed = true;
-
     update(values);
   });
 
   // RELEASE
   targetElement.addEventListener('mouseup', event => {
-    const mouseLocation = getPosition(event.clientX, event.clientY);
-
     values.isActive = true;
-    values.position = mouseLocation;
+    values.position = point(event.clientX, event.clientY);
     values.isPressed = false;
-
     update(values);
   });
 
   // OUT
   targetElement.addEventListener('mouseout', event => {
-    const mouseLocation = getPosition(event.clientX, event.clientY);
-
     values.isActive = false; 
-    values.position = mouseLocation;
+    values.position = point(event.clientX, event.clientY);
     //values.isPressed = false;
-    
     update(values);
   });
 
   // DRAG && HOVER OVER
   targetElement.addEventListener('mousemove', event => {
-    const mouseLocation = getPosition(event.clientX, event.clientY);
+    const mouseLocation = point(event.clientX, event.clientY);
     values.isActive = true;
     values.lastPosition = (values.position || mouseLocation);
     values.position = mouseLocation;
-
     update(values);
   });
+
+  return () => values;
 }
