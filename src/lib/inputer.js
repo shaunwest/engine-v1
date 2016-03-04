@@ -9,19 +9,10 @@
  *
  */
 
+import values from './state/_input.js';
 import { point } from './util/geom.js';
 
 export default function Inputer(targetElement, update = function() {}) {
-  const values = {
-    isPressed: false,
-    isActive: false,
-    position: null,
-    initialPressPosition: null,
-    lastPosition: null
-  };
-
-  //const getPosition = (x, y) => (translator) ? translator(x, y, targetElement) : point(x, y);
-
   // PRESS
   targetElement.addEventListener('mousedown', event => {
     values.isActive = true;

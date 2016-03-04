@@ -1,23 +1,24 @@
+import { get, release } from '../pool.js';
 
 export function point(x = 0, y = 0) {
-  return {
-    x,
-    y
-  };
+  const obj = get();
+  obj.x = x;
+  obj.y = y;
+  return obj;
 }
 
 export function dist(point1, point2) {
-  return {
-    x: Math.abs(point1.x - point2.x),
-    y: Math.abs(point1.y - point2.y)
-  };
+  const obj = get();
+  obj.x = Math.abs(point1.x - point2.x);
+  obj.y = Math.abs(point1.y - point2.y);
+  return obj;
 }
 
 export function disp(point1, point2) {
-  return {
-    x: point1.x - point2.x,
-    y: point1.y - point2.y
-  };
+  const obj = get();
+  obj.x = point1.x - point2.x;
+  obj.y = point1.y - point2.y;
+  return obj;
 }
 
 export function isMinDist(dist, x, y) {

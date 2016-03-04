@@ -1,19 +1,10 @@
+import { objectPoolState } from './state/_pool.js';
 import { clear } from './obj.js';
 
-export function ObjectPool() {
-  const pool = [];
-
-  const makeNew = () => release({});
-  const getExisting = () => clear(pool.pop());
-  const get = () => getExisting() || makeNew();
-
-  const release = (obj) => {
-    pool.push(obj);
-    return obj;
-  };
-
-  return {
-    get,
-    release
-  };
-}
+export const get = () => getExisting() || makeNew();
+export const makeNew = () => release({});
+export const getExisting = () => clear(objectPoolState.pop());
+export const release = obj => {
+  objectPoolState.push(obj);
+  return obj;
+};

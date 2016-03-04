@@ -5,6 +5,9 @@
 /* 
  * TODO: put more of the loop consts into loopState so there's less
  * to garbage collect. Plus more information for debugging.
+ *
+ * TODO: since loopState is separate, can Looper just be called
+ * every time we need to attach a callback to the loop?
  */
 
 export const TARGET_FPS = 60;
@@ -29,10 +32,7 @@ export default function Looper(loopState) {
 
     if (!loopState.paused) {  
       for (const [callbackId, callback] of loopState.callbacks) {
-        const result = callback(fps, elapsed, totalElapsed, loopState.vFrameCount, loopState.aFrameCount);
-        if (typeof result !== 'undefined') {
-          loopState.callbacks.delete(callbackId);
-        }
+        callback(fps, elapsed, totalElapsed, loopState.vFrameCount, loopState.aFrameCount);
       }
     }
 
