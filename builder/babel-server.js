@@ -20,7 +20,14 @@ function babelServer(externalCss, assetUrl) {
     try {
         require('babel-polyfill');
         require('babel-core/register')({
-            only: /src/,
+            ignore: function (filename) {
+              if (filename.match(/src/) || filename.match(/flow-wip/) && !filename.match(/node_modules/)) {
+                return false;
+              } else {
+                return true;
+              }
+            },
+            //only: /src|flow-wip/,
             presets: BABEL_PRESETS
         });
         // TODO: how can this path be made configurable??

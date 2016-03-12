@@ -2,31 +2,27 @@
  * Created by shaunwest on 9/11/15.
  */
 
-var IMAGE_WAIT_INTERVAL = 100;
+const IMAGE_WAIT_INTERVAL = 100;
 
-function waitForImage (image) {
-  return new Promise(function(resolve, reject) {
-    var intervalId = setInterval(function() {
-      if(image.complete) {
+export const createImage = uri => {
+  const image = new Image();
+  image.src = uri;
+  return image;
+}
+
+export const waitForImage = image =>
+  new Promise((resolve, reject) => {
+    const intervalId = setInterval(() => {
+      if (image.complete) {
         clearInterval(intervalId);
         resolve(image);
       }
     }, IMAGE_WAIT_INTERVAL);
 
-    image.onerror = function () {
+    image.onerror = () => {
       clearInterval(intervalId);
       reject('error');
     };
   });
-}
 
-export default function getImage (uri) {
-  var image, promise;
-
-  image = new Image();
-  image.src = uri;
-
-  promise = waitForImage(image);
-
-  return promise;
-}
+export default (uri) => waitForImage(createImage(uri));

@@ -28,6 +28,9 @@ module.exports = {
         postLoaders: [],
         noParse: /\.min\.js/
     },
+    /*resolve: {
+      modulesDirectories: ['dev_modules', 'node_modules']
+    },*/
     node: {
         __dirname: true,
         fs: 'empty'

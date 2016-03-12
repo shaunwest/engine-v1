@@ -1,21 +1,21 @@
-import { get, release } from '../pool.js';
+import { getObject, releaseObject } from './pool.js';
 
 export function point(x = 0, y = 0) {
-  const obj = get();
+  const obj = getObject();
   obj.x = x;
   obj.y = y;
   return obj;
 }
 
 export function dist(point1, point2) {
-  const obj = get();
+  const obj = getObject();
   obj.x = Math.abs(point1.x - point2.x);
   obj.y = Math.abs(point1.y - point2.y);
   return obj;
 }
 
 export function disp(point1, point2) {
-  const obj = get();
+  const obj = getObject();
   obj.x = point1.x - point2.x;
   obj.y = point1.y - point2.y;
   return obj;
@@ -91,41 +91,4 @@ export function rectHasMinSize(rect, width, height) {
 export function rectContainsPoint(point, rect) {
   return (point.x >= rect.x && point.x < rect.x + rect.width && 
     point.y >= rect.y && point.y < rect.y + rect.height);
-}
-
-export function flattenCoord(x, y, targetWidth) {
-  return (y * targetWidth) + x;
-}
-
-export function unFlattenXCoord(value, targetWidth) {
-  return value % targetWidth;
-}
-
-export function unFlattenYCoord(value, targetWidth) {
-  return Math.floor(value / targetWidth);
-}
-
-export function unFlattenXDimension(value, targetWidth) {
-  return Math.min(value, targetWidth);
-}
-
-// TODO can this be computed without units? (tileSize)
-export function unFlattenYDimension(value, targetWidth) {
-  const width = unFlattenXDimension(value, targetWidth);
-  return width;
-  //return unFlattenYCoord(value, targetWidth);
-}
-
-export function unFlattenCoord(value, targetWidth) {
-  return {
-    x: unFlattenXCoord(value, targetWidth),
-    y: unFlattenYCoord(value, targetWidth)
-  };
-}
-
-export function unFlattenDimensions(value, targetWidth) {
-  return {
-    width: unFlattenXDimension(value, targetWidth),
-    height: unFlattenYDimension(value, targetWidth)
-  };
 }
