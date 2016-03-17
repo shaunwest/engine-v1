@@ -1,3 +1,4 @@
+import 'isomorphic-fetch';
 
 export const fetchResource = src =>
   fetch(src)
