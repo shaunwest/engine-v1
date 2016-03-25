@@ -7,9 +7,6 @@ var webpackBuilder = require('./builder.js');
 
 require('./console.js')();
 
-// We're in server mode
-global.__SERVER__ = true;
-
 function startProd(options) {
     var config = require('./webpack-prod-config.js'),
         EXTERNAL_CSS = true,
@@ -20,9 +17,6 @@ function startProd(options) {
     }, function onReady(err) {
         if (err) {
             console.warn(error.stack);
-        }
-        else {
-            require('./babel-server.js')(EXTERNAL_CSS, ASSET_URL);
         }
     });
 }
@@ -53,15 +47,7 @@ function startDev(options) {
         if (err) {
             console.warn(error.stack);
         }
-        else {
-            // Spawn a new babel server process
-            // "piping" will watch for changes and relaunch the server
-            require('piping')({
-                main: './builder/start-babel-server.js',
-                hook: true,
-                includeModules: false
-            });
-        }
+        else {}
     });
 }
 

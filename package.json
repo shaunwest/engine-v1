@@ -34,7 +34,9 @@
     "rx-dom": "^7.0.3"
   },
   "devDependencies": {
-    "babel-loader": "^6.2.1",
+    "babel-core": "^6.7.2",
+    "babel-loader": "^6.2.4",
+    "browserify": "^13.0.0",
     "colors": "^1.1.2",
     "css-loader": "^0.23.1",
     "extract-text-webpack-plugin": "^1.0.1",

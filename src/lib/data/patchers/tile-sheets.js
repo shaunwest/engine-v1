@@ -1,38 +1,12 @@
 import { RECEIVED_TILE_SHEET, RECEIVED_TILE_SHEET_IMAGE } from '../actions/tile-sheets.js';
+import { subscribeImmutable, subscribeNonSerializable } from '../store.js';
 
-/*
-export default (data, type, value, diffs) => {
-  switch(type) {
-    case RECEIVED_TILE_SHEET:
-  }
-};
-*/
+export default () => {
+  subscribeImmutable(RECEIVED_TILE_SHEET, (state, tileSheetData) =>
+    Object.assign({}, state, { tileSheets: { [tileSheetData.id]: tileSheetData } }));
 
-/*
-export const tileSheetsHandler = {
-  [RECEIVED_TILE_SHEET]: (data, tileSheetData) => {
-    return Object.assign({
-      tileSheet: { 
-        'demo-tiles': tileSheetData
-      }
-    }, data);
-  },
-  [RECEIVED_TILE_SHEET_IMAGE]: (data, tileSheetImage) => {
-    return Object.assign({
-      tileSheetImage: tileSheetImage
-    }, data);
-  }
-};
-*/
+  subscribeNonSerializable(RECEIVED_TILE_SHEET_IMAGE, (state, src, tileSheetImage) =>
+    Object.assign(state, { tileSheetImages: { [src]: tileSheetImage } }));
 
-export const receivedTileSheet = (data, tileSheetData) =>
-  Object.assign({}, data, {
-    tileSheet: { 
-      'demo-tiles': tileSheetData
-    }
-  });
 
-export const receivedTileSheetImage = (data, tileSheetImage) =>
-  Object.assign({}, data, { 
-    tileSheetImage
-  });
+}

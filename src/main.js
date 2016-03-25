@@ -1,10 +1,9 @@
 import React from 'react';
-import EngineData from './lib/engine-data.js';
-import Engine from './lib/engine.js';
+import Game from './lib/game.js';
 
 export default class Main extends React.Component {
   render() {
-    const {contentRender, dataRender} = Engine();
+    const {contentRender, dataRender} = Game();
 
     return (
       <div>

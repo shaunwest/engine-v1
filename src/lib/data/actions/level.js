@@ -1,10 +1,9 @@
 import { fetchResource } from '../resource.js';
-import { fetchTileSheetData } from './tile-sheets.js';
-//import { publish } from '../../util/pubsub.js';
-import { publishImmutable } from '../../state/_data-store.js';
+import { publishImmutable } from '../store.js';
 
 export const RECEIVED_LEVEL = 'RECEIVED_LEVEL';
 export const RECEIVED_LEVEL_ERROR = 'RECEIVED_LEVEL_ERROR';
+export const LEVEL_READY = 'LEVEL_READY';
 
 export const fetchLevel = src =>
   fetchResource(src)
@@ -15,3 +14,6 @@ export const fetchLevel = src =>
       },
       text => publishImmutable(RECEIVED_LEVEL_ERROR, text)
     );
+
+export const levelReady = () =>
+  publishImmutable(LEVEL_READY);

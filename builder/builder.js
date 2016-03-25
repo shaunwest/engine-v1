@@ -32,7 +32,7 @@ function runWebpackServer(options, cb) {
     serverCompiler = webpack(options.config);
 
     server = new WebpackDevServer(serverCompiler, {
-        hot: true,
+        //hot: true,
         contentBase: '../static',
         inline: true,
         quiet: false, // true = don't output anything to console, false = output it

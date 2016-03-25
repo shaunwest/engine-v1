@@ -21,7 +21,7 @@ function babelServer(externalCss, assetUrl) {
         require('babel-polyfill');
         require('babel-core/register')({
             ignore: function (filename) {
-              if (filename.match(/src/) || filename.match(/flow-wip/) && !filename.match(/node_modules/)) {
+              if (filename.match(/src/) || filename.match(/base-utils/) || !filename.match(/node_modules/)) {
                 return false;
               } else {
                 return true;

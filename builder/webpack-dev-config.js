@@ -7,13 +7,13 @@ var devConfig = Object.assign({}, baseConfig);
 
 devConfig.debug = true;
 devConfig.entry.unshift(
-    'webpack-dev-server/client?' + env.watchServerUrl,
-    'webpack/hot/dev-server'
+    'webpack-dev-server/client?' + env.watchServerUrl
+    //'webpack/hot/dev-server'
 );
 devConfig.output.publicPath = env.watchServerUrl + '/dist/';
-devConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-devConfig.module.postLoaders.push(
-    { test: /\.js$/, loaders: ['react-hot'], exclude: /node_modules/ }
-);
+//devConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+//devConfig.module.postLoaders.push(
+//    { test: /\.js$/, loaders: ['react-hot'], exclude: /node_modules/ }
+//);
 
 module.exports = devConfig;
