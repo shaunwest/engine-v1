@@ -2,14 +2,11 @@ import Looper from 'base-utils/looper.js';
 import Inputer from 'base-utils/inputer.js';
 import { point } from 'base-utils/geom';
 import { maybe } from 'base-utils/functor';
-import inputState from './state/_input';
 import debug from './debug';
 import { randomRects } from './demo';
-import { initAndFetch } from './data/data';
 import { _immutableStore, _nonSerializableStore, _mutableStore, subscribeImmutable } from './data/store';
 import { LEVEL_READY } from './data/actions/level';
 import { updateFrameTable } from './data/actions/frame-table.js';
-//import { updateFrameTable } from './game-image-types';
 import visualizer from './data/visualizer';
 
 const getInputLocation = (inputPosition, elementBounds) => 
@@ -33,13 +30,13 @@ const logic = (data, inputData) => {
 // and render to context
 const render = (context, renderData) => randomRects(context);
 
-// need a better way to handle incomplete data
+// TODO: need a better way to handle incomplete data
+// TODO: this is just side-effects, doesn't return anything
 const updateData = () => {
   if (_immutableStore.state.tileSheets && 
     _immutableStore.state.tileSheets['smb-tiles'] &&
     _nonSerializableStore.state.animations['smb-tiles']) {
     updateFrameTable(
-      //_mutableStore.state.frameTable,
       _immutableStore.state.tileSheets['smb-tiles'].tiles,
       _nonSerializableStore.state.animations['smb-tiles'],
       60,
@@ -49,34 +46,19 @@ const updateData = () => {
 };
 
 export default () => {
-  initAndFetch();
-
   const mainLoop = Looper(_mutableStore.state.loop);
-
   const contentRender = element => maybe(element, element =>
     mainLoop('GAME_LOOP', () =>
       render(
         element.getContext('2d'),
         logic(
           updateData(),
-          input(element.getBoundingClientRect(), Inputer(inputState, element))
+          // inputer isn't using dispatcher...
+          input(element.getBoundingClientRect(), Inputer(_mutableStore.state.input, element))
         )
       )
     )
   );
 
-  /*
-  const dataRender = element => maybe(element, element =>
-    mainLoop('DATA_LOOP', (fps, elapsed, totalElapsed, vFrameCount, aFrameCount) =>
-      debug(fps, elapsed, totalElapsed, vFrameCount, aFrameCount, element)
-    )
-  );
-  */
-  const dataRender = element => maybe(element, element =>
-    setInterval(() =>
-      element.innerHTML = visualizer(_mutableStore.state).innerHTML
-    , 200)
-  );
-
-  return { contentRender, dataRender };
+  return contentRender;
 }

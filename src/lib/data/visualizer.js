@@ -1,22 +1,17 @@
-
-export default (dataStore) => renderByType(dataStore);
+import h from 'virtual-dom/h';
 
 const isType = (obj, type) =>
   Object.prototype.toString.call(obj) === '[object ' + type + ']';
 
-const canvasToImage = canvas => {
-  const img = new Image();
-  img.src = canvas.toDataURL();
-  return img;
-};
+const canvasToImage = canvas => h('img', { src: canvas.toDataURL() });
 
 const renderByObjectType = obj => {
   if (isType(obj, 'Null')) {
-    return renderValue(obj);
+    return renderValue('');
   }
 
   if (isType(obj, 'HTMLImageElement')) {
-    return obj;
+    return h('img', { src: obj.src });
   }
 
   if (isType(obj, 'HTMLCanvasElement')) {
@@ -26,32 +21,16 @@ const renderByObjectType = obj => {
   return renderObject(obj);
 };
 
-const renderObject = obj => {
-  const ul = document.createElement('ul');
+const renderObject = obj =>
+  h('ul', Object.keys(obj).map(key => 
+    h('li', [
+      renderValue(`${ key }: `),
+      renderByType(obj[key])
+    ])));
 
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      const li = document.createElement('li');
-      li.appendChild(renderValue(`${ key }: `));
-      li.appendChild(renderByType(obj[key]));
-      ul.appendChild(li);
-    }
-  }
+const renderValue = value => h('span', {}, String(value));
 
-  return ul;
-};
-
-const renderValue = (value) => {
-  const span = document.createElement('span');
-  span.innerHTML = (value === null) ? 'NULL' : value;
-  return span;
-};
-
-const renderByType = value => {
-  switch (typeof value) {
-    case 'object':
-      return renderByObjectType(value);
-    default:
-      return renderValue(value);
-  }
-};
+export const renderByType = value =>
+  (typeof value === 'object') ? 
+    renderByObjectType(value) :
+    renderValue(value);
