@@ -4,10 +4,12 @@ import { point } from 'base-utils/geom';
 import { maybe } from 'base-utils/functor';
 import debug from './debug';
 import { randomRects } from './demo';
-import { _immutableStore, _nonSerializableStore, _mutableStore, subscribeImmutable } from './data/store';
-import { LEVEL_READY } from './data/actions/level';
+import { subscribeMutable } from './data/store';
+import { SCENE_READY } from './data/actions/scene';
 import { updateFrameTable } from './data/actions/frame-table.js';
 import visualizer from './data/visualizer';
+
+const TARGET_FPS = 60;
 
 const getInputLocation = (inputPosition, elementBounds) => 
   (inputPosition) ? 
@@ -21,7 +23,7 @@ const getInputLocation = (inputPosition, elementBounds) =>
 const input = (elementBounds, getInput) => getInputLocation(getInput().position, elementBounds);
 
 // combine game data with input, return sprites and associated render data
-const logic = (data, inputData) => {
+const logic = (state, inputData) => {
   //console.log(inputData);
   return {};
 }
@@ -30,35 +32,20 @@ const logic = (data, inputData) => {
 // and render to context
 const render = (context, renderData) => randomRects(context);
 
-// TODO: need a better way to handle incomplete data
-// TODO: this is just side-effects, doesn't return anything
-const updateData = () => {
-  if (_immutableStore.state.tileSheets && 
-    _immutableStore.state.tileSheets['smb-tiles'] &&
-    _nonSerializableStore.state.animations['smb-tiles']) {
-    updateFrameTable(
-      _immutableStore.state.tileSheets['smb-tiles'].tiles,
-      _nonSerializableStore.state.animations['smb-tiles'],
-      60,
-      _mutableStore.state.loop.aFrameCount
-    );
-  }
-};
+// Things to update: frameTable, viewport, entity positions, level state, stats/progress
+const updateData = () => updateFrameTable('smb-tiles', TARGET_FPS);
 
-export default () => {
-  const mainLoop = Looper(_mutableStore.state.loop);
-  const contentRender = element => maybe(element, element =>
-    mainLoop('GAME_LOOP', () =>
+export default () => element => maybe(element, element =>
+  subscribeMutable(SCENE_READY, state =>
+    Looper(state.loop)('GAME_LOOP', () => {
+      updateData();
       render(
         element.getContext('2d'),
         logic(
-          updateData(),
-          // inputer isn't using dispatcher...
-          input(element.getBoundingClientRect(), Inputer(_mutableStore.state.input, element))
+          state, 
+          input(element.getBoundingClientRect(), Inputer(state.input, element))
         )
       )
-    )
-  );
-
-  return contentRender;
-}
+    })
+  )
+);

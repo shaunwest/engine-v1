@@ -3,22 +3,13 @@ import React from 'react';
 import Game from './lib/game';
 import { initAndFetch } from './lib/data/data';
 
-const noop = () => {};
-
 export default class Main extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ready: false 
-    };
-  }
-
   componentDidMount() {
-    initAndFetch().then(() => this.setState({ ready: true }));
+    initAndFetch();
   }
 
   render() {
-    const gameRender = (this.state.ready) ? Game() : noop;
+    const gameRender = Game();
 
     return (
       <div>

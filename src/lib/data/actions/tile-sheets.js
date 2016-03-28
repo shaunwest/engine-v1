@@ -21,9 +21,6 @@ export const fetchTileSheetImage = imageSrc =>
   fetchImage('http://localhost:3000/assets/' + imageSrc)
     .then(
       img => {
-        /*const newImg = new Image();
-        newImg.crossOrigin = 'anonymous';
-        newImg.src = img.src;*/
         publishNonSerializable(RECEIVED_TILE_SHEET_IMAGE, imageSrc, img);
         return img;
       },

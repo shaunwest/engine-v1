@@ -3,7 +3,7 @@
  * created by shaunwest on 9/13/15.
  */
 
-// FIXME: use Ramda
+// FIXME: use Ramda?
 
 export function getAnimation(imageSheet, x, y, width, height, xRange = 1) {
   const rangeEnd = x + (width * xRange),

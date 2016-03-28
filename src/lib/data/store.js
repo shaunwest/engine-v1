@@ -1,3 +1,5 @@
+// TODO: merge nonSerializable into mutable
+
 import { createDataStore, createSub, createPub } from 'base-utils/data-store.js';
 
 export const _immutableStore = createDataStore();

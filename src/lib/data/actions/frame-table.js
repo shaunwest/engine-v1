@@ -1,4 +1,4 @@
-import { publishMutable } from '../store.js';
+import { _immutableStore, _mutableStore, _nonSerializableStore, publishMutable } from '../store.js';
 import * as types from '../../game-image-types.js'; 
 
 export const INIT_FRAME_TABLE = 'INIT_FRAME_TABLE';
@@ -6,7 +6,10 @@ export const UPDATE_FRAME_TABLE = 'UPDATE_FRAME_TABLE';
 
 export const initFrameTable = (frameTableData = []) => publishMutable(INIT_FRAME_TABLE, frameTableData);
 
-export const updateFrameTable = (gameImageDataSet, gameImageSet, targetFps, frameCount) => {
+export const updateFrameTable = (tileSheetId, targetFps) => {
+  const gameImageDataSet = _immutableStore.state.tileSheets[tileSheetId].tiles;
+  const gameImageSet = _nonSerializableStore.state.animations[tileSheetId];
+  const frameCount = _mutableStore.state.loop.aFrameCount;
   const numGameImages = (gameImageDataSet) ? gameImageDataSet.length : 0;
 
   for (let i = 0; i < numGameImages; i++) {

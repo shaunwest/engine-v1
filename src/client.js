@@ -16,13 +16,20 @@ const reactRoot = window.document.getElementById('react-root');
 ReactDOM.render(React.createElement(Main), reactRoot);
 
 // Debug Stuff
-let tree = renderByType(_mutableStore.state);
-let rootNode = createElement(tree);
-document.getElementById('vdom-container').appendChild(rootNode);
+const debugLoop = Looper(_mutableStore.state.loop);
 
-Looper(_mutableStore.state.loop)('DEBUG_LOOP', (fps, elapsed, totalElapsed, vFrameCount, aFrameCount) => {
-  const newTree = renderByType(_mutableStore.state);
-  const patches = diff(tree, newTree);
-  rootNode = patch(rootNode, patches);
-  tree = newTree;
-});
+const debug = (container, loopId, store) => {
+  let tree = renderByType(store.state);
+  let rootNode = createElement(tree);
+  document.getElementById(container).appendChild(rootNode);
+
+  debugLoop(loopId, (fps, elapsed, totalElapsed, vFrameCount, aFrameCount) => {
+    const newTree = renderByType(store.state);
+    const patches = diff(tree, newTree);
+    rootNode = patch(rootNode, patches);
+    tree = newTree;
+  });
+}
+
+debug('mutable-debug-container', 'MUTABLE_DEBUG_LOOP', _mutableStore);
+debug('immutable-debug-container', 'IMMUTABLE_DEBUG_LOOP', _immutableStore);
