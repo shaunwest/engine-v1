@@ -1,6 +1,5 @@
 import Looper from 'base-utils/looper.js';
 import Inputer from 'base-utils/inputer.js';
-import { point } from 'base-utils/geom';
 import { maybe } from 'base-utils/functor';
 import debug from './debug';
 import { randomRects } from './demo';
@@ -8,23 +7,17 @@ import { subscribeMutable } from './data/store';
 import { SCENE_READY } from './data/actions/scene';
 import { updateFrameTable } from './data/actions/frame-table.js';
 import visualizer from './data/visualizer';
+import { map2dRegion } from './fixed-grid.js';
 
 const TARGET_FPS = 60;
 
-const getInputLocation = (inputPosition, elementBounds) => 
-  (inputPosition) ? 
-    point(
-      inputPosition.x - Math.floor(elementBounds.left),
-      inputPosition.y - Math.floor(elementBounds.top)
-    ) :
-    null;
-
-// process user input
-const input = (elementBounds, getInput) => getInputLocation(getInput().position, elementBounds);
+const getKeys = getInput => getInput().keysPressed;
 
 // combine game data with input, return sprites and associated render data
-const logic = (state, inputData) => {
-  //console.log(inputData);
+const logic = (state, keys) => {
+  // playerLogic()
+  // handleCollisions
+  // viewportLogic()
   return {};
 }
 
@@ -32,20 +25,34 @@ const logic = (state, inputData) => {
 // and render to context
 const render = (context, renderData) => randomRects(context);
 
-// Things to update: frameTable, viewport, entity positions, level state, stats/progress
+const renderFixed2d = (context, layer, viewport, tileTable) => {
+  map2dRegion(layer, layer.length, viewport, (x, y, tileIndex) => {
+    const tile = tileTable[tileIndex];
+    if (tile) context.drawImage(tile, x * 16, y * 16);
+  });
+}
+
+const renderFree2d = (context, layer, viewport) => {
+  // do sprites...
+}
+
+// Things to update: frameTable, entity positions, level state, stats/progress
 const updateData = () => updateFrameTable('smb-tiles', TARGET_FPS);
 
 export default () => element => maybe(element, element =>
-  subscribeMutable(SCENE_READY, state =>
+  subscribeMutable(SCENE_READY, state => {
     Looper(state.loop)('GAME_LOOP', () => {
+      const context = element.getContext('2d');
+      context.clearRect(0, 0, 246, 240);
       updateData();
-      render(
+      renderFixed2d(context, state.layers.background, state.viewport, state.frameTable);
+      /*render(
         element.getContext('2d'),
         logic(
           state, 
-          input(element.getBoundingClientRect(), Inputer(state.input, element))
+          getKeys(Inputer(state.input, element))
         )
-      )
+      )*/
     })
-  )
+  })
 );

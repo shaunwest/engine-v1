@@ -5,7 +5,7 @@ import { initAndFetch } from './lib/data/data';
 
 export default class Main extends React.Component {
   componentDidMount() {
-    initAndFetch();
+    initAndFetch('http://localhost:3000/data/smb-scene.json');
   }
 
   render() {

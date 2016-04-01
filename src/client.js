@@ -5,7 +5,7 @@ import diff from 'virtual-dom/diff';
 import patch from 'virtual-dom/patch';
 import createElement from 'virtual-dom/create-element';
 
-import { _immutableStore, _mutableStore, _nonSerializableStore } from './lib/data/store';
+import { _immutableStore, _mutableStore } from './lib/data/store';
 import { renderByType } from './lib/data/visualizer';
 
 import './sass/style.scss';
@@ -32,4 +32,4 @@ const debug = (container, loopId, store) => {
 }
 
 debug('mutable-debug-container', 'MUTABLE_DEBUG_LOOP', _mutableStore);
-debug('immutable-debug-container', 'IMMUTABLE_DEBUG_LOOP', _immutableStore);
+//debug('immutable-debug-container', 'IMMUTABLE_DEBUG_LOOP', _immutableStore);

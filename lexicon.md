@@ -26,7 +26,7 @@ MASTER LEXICON
 
   An object that describes and can contain an Animation
 
-- AnimationSet (don't think I need this)
+- AnimationSet
   
   An object that contains Animations
 

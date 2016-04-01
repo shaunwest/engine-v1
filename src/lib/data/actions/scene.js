@@ -1,4 +1,4 @@
-import { fetchResource } from '../resource.js';
+import { fetchResource } from 'base-utils/resource.js';
 import { publishImmutable, publishMutable } from '../store.js';
 
 export const RECEIVED_SCENE = 'RECEIVED_SCENE';

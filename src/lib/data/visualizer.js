@@ -1,5 +1,7 @@
 import h from 'virtual-dom/h';
 
+const MAX_ARRAY_LENGTH = 150;
+
 const isType = (obj, type) =>
   Object.prototype.toString.call(obj) === '[object ' + type + ']';
 
@@ -18,6 +20,12 @@ const renderByObjectType = obj => {
     return canvasToImage(obj);
   }
 
+  if (isType(obj, 'Array')) {
+    return (obj.length < MAX_ARRAY_LENGTH) ?
+      renderArray(obj) :
+      renderValue('[Array Too Long]');
+  }
+
   return renderObject(obj);
 };
 
@@ -27,6 +35,10 @@ const renderObject = obj =>
       renderValue(`${ key }: `),
       renderByType(obj[key])
     ])));
+
+const renderArray = arr =>
+  h('div', arr.map(val => 
+    h('span', renderByType(val))));
 
 const renderValue = value => h('span', {}, String(value));
 

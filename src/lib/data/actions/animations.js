@@ -1,10 +1,10 @@
-import { publishNonSerializable } from '../store.js';
-import { getAnimation } from '../image-sheet-processor.js';
+import { publishMutable } from '../store.js';
+import { getAnimation } from '../util/image-sheet-processor.js';
 
 export const INIT_ANIMATIONS = 'INIT_ANIMATIONS';
 export const CREATED_ANIMATION = 'CREATED_ANIMATION';
 
-export const initAnimations = (animations = {}) => publishNonSerializable(INIT_ANIMATIONS, animations);
+export const initAnimations = (animations = {}) => publishMutable(INIT_ANIMATIONS, animations);
 
 export const createAnimations = (tileSheetId, imageSheet, gameImageIndex, gameImage) => {
   const { width, height, frames } = gameImage;
@@ -20,6 +20,6 @@ export const createAnimations = (tileSheetId, imageSheet, gameImageIndex, gameIm
       animationData.xRange
     );
 
-    publishNonSerializable(CREATED_ANIMATION, tileSheetId, gameImageIndex, name, animation);
+    publishMutable(CREATED_ANIMATION, tileSheetId, gameImageIndex, name, animation);
   });
 };

@@ -1,6 +1,6 @@
 import fetchImage from 'base-utils/image-loader.js';
-import { fetchResource } from '../resource.js';
-import { publishImmutable, publishNonSerializable } from '../store.js';
+import { fetchResource } from 'base-utils/resource.js';
+import { publishImmutable, publishMutable } from '../store.js';
 import { createAnimations } from '../actions/animations.js';
 
 export const RECEIVED_TILE_SHEET = 'RECEIVED_TILE_SHEET';
@@ -21,7 +21,7 @@ export const fetchTileSheetImage = imageSrc =>
   fetchImage('http://localhost:3000/assets/' + imageSrc)
     .then(
       img => {
-        publishNonSerializable(RECEIVED_TILE_SHEET_IMAGE, imageSrc, img);
+        publishMutable(RECEIVED_TILE_SHEET_IMAGE, imageSrc, img);
         return img;
       },
       text => 'Error!'
