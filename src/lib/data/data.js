@@ -6,7 +6,7 @@ import { initViewport } from './actions/viewport.js';
 import { initInput } from './actions/input.js';
 import { initFrameTable } from './actions/frame-table.js';
 import { initAnimations, createAnimations } from './actions/animations.js';
-import { initLayers, copyLayout } from './actions/layers.js';
+import { initLayers, copyLayout, createLayoutSegments } from './actions/layers.js';
 import { _immutableStore } from './store.js';
 
 export const initAndFetch = (sceneUrl) => {
@@ -17,8 +17,8 @@ export const initAndFetch = (sceneUrl) => {
   initViewport({
     x: 0,
     y: 0,
-    width: 256,
-    height: 240
+    width: 16,
+    height: 15
   });
   initLoop({
     paused: false,
@@ -49,22 +49,19 @@ const fetchData = sceneUrl => fetchScene(sceneUrl).then(onFetchScene);
 const onFetchScene = sceneData =>
   Promise.all(Object.keys(sceneData.layers).map(layerId => {
     const layer = sceneData.layers[layerId];
-    copyLayout(layerId);
+
+    if (layer.layoutType === 'FIXED_2D')
+      copyLayout(layerId);
+    else 
+      createLayoutSegments(layerId);
+    
     return fetchTileSheetData(layer.tileSheet + '.json').then(onFetchTileSheetData(layer));
   }));
 
 const onFetchTileSheetData = layer => tileSheetData =>
   fetchTileSheetImage(tileSheetData.src).then(onFetchTileSheetImage(tileSheetData.id, tileSheetData.tiles, layer.layoutType));
 
-const onFetchTileSheetImage = (tileSheetId, tiles, layoutType) => tileSheetImage => {
-  switch (layoutType) {
-    case 'FIXED_2D':
-      processTileSheet(tileSheetId, tileSheetImage, tiles);
-      break;
-    case 'FREE_2D':
-      processTileSheet(tileSheetId, tileSheetImage, tiles);
-      break;
-  }
-}
+const onFetchTileSheetImage = (tileSheetId, tiles, layoutType) => tileSheetImage =>
+  processTileSheet(tileSheetId, tileSheetImage, tiles);
 
 export const updateData = () => {}

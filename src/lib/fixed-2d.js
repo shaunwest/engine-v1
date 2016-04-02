@@ -1,6 +1,6 @@
 import { flattenCoord } from 'base-utils/flatten';
 
-export const map2dRegion = (flatArray, maxWidth, region, mapFunc) => {
+export const mapFixed2dRegion = (flatArray, maxWidth, region, mapFunc) => {
   const startX = region.x;
   const startY = region.y;
   const endX = Math.min(startX + region.width, maxWidth);

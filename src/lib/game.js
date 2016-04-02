@@ -3,11 +3,11 @@ import Inputer from 'base-utils/inputer.js';
 import { maybe } from 'base-utils/functor';
 import debug from './debug';
 import { randomRects } from './demo';
-import { subscribeMutable } from './data/store';
+import { subscribeMutable, _immutableStore } from './data/store';
 import { SCENE_READY } from './data/actions/scene';
 import { updateFrameTable } from './data/actions/frame-table.js';
 import visualizer from './data/visualizer';
-import { map2dRegion } from './fixed-grid.js';
+import { mapFixed2dRegion } from './fixed-2d.js';
 
 const TARGET_FPS = 60;
 
@@ -25,15 +25,15 @@ const logic = (state, keys) => {
 // and render to context
 const render = (context, renderData) => randomRects(context);
 
-const renderFixed2d = (context, layer, viewport, tileTable) => {
-  map2dRegion(layer, layer.length, viewport, (x, y, tileIndex) => {
+const renderFixed2d = (context, layer, viewport, tileTable) =>
+  mapFixed2dRegion(layer, 512, viewport, (x, y, tileIndex) => {
     const tile = tileTable[tileIndex];
     if (tile) context.drawImage(tile, x * 16, y * 16);
   });
-}
 
 const renderFree2d = (context, layer, viewport) => {
-  // do sprites...
+  mapFixed2dRegion(layer, 512, viewport, (segmentX, segmentY, segment) => {
+  });
 }
 
 // Things to update: frameTable, entity positions, level state, stats/progress
