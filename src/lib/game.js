@@ -19,9 +19,6 @@ const getFrameTable = store => store.mutable.frameTable;
 const getTileSheetId = (store, layerId) => store.immutable.scene.layers[layerId].tileSheet;
 */
 
-getKeys, getLayerData, getLayer, getViewport, getFrameTable, getTileSheetId
-
-
 // Things to update: frameTable, entity positions, level state, stats/progress
 // entity positions depend on: player actions, ai, collisions, physics
 // playerLogic()
