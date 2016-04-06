@@ -1,16 +1,23 @@
 import initPatchers from './patchers/patchers';
 import { fetchScene, sceneReady } from './actions/scene';
 import { fetchTileSheetData, fetchTileSheetImage, processTileSheet } from './actions/tile-sheets';
+//import { initPool } from './actions/pool.js';
 import { initLoop } from './actions/loop.js';
 import { initViewport } from './actions/viewport.js';
 import { initInput } from './actions/input.js';
 import { initFrameTable } from './actions/frame-table.js';
 import { initAnimations, createAnimations } from './actions/animations.js';
 import { initLayers, copyLayout, createLayoutSegments } from './actions/layers.js';
-import { _immutableStore } from './store.js';
 
-export const initAndFetch = (sceneUrl) => {
+export const initAndFetch = sceneUrl => {
   initPatchers();
+  /* probably not going to have pool in store
+  initPool({
+    objects: [],
+    objectPointer: 0,
+    arrays: [],
+    arrayPointer: 0
+  });*/
   initAnimations();
   initFrameTable();
   initLayers();
@@ -22,9 +29,11 @@ export const initAndFetch = (sceneUrl) => {
   });
   initLoop({
     paused: false,
-    callbacks: new Map(),
+    callbacks: {},
     last: 0, 
     fps: 0,
+    timer: 0,
+    sFrameCount: 0,
     vFrameCount: 0,
     aFrameCount: 0,
     totalElapsed: 0,

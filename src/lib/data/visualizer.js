@@ -20,6 +20,10 @@ const renderByObjectType = obj => {
     return canvasToImage(obj);
   }
 
+  if (isType(obj, 'Function')) {
+    return renderValue('[Function]');
+  }
+
   if (isType(obj, 'Array')) {
     return (obj.length < MAX_ARRAY_LENGTH) ?
       renderArray(obj) :

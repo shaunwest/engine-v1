@@ -1,58 +1,74 @@
 import Looper from 'base-utils/looper.js';
 import Inputer from 'base-utils/inputer.js';
+import { compose } from 'base-utils/func.js';
 import { maybe } from 'base-utils/functor';
-import debug from './debug';
-import { randomRects } from './demo';
-import { subscribeMutable, _immutableStore } from './data/store';
+import { subscribe, getKeys, getLayerData, getLayer, 
+  getViewport, getFrameTable, getTileSheetId } from './data/store';
 import { SCENE_READY } from './data/actions/scene';
 import { updateFrameTable } from './data/actions/frame-table.js';
-import visualizer from './data/visualizer';
 import { mapFixed2dRegion } from './fixed-2d.js';
 
 const TARGET_FPS = 60;
 
+/*
 const getKeys = getInput => getInput().keysPressed;
+const getLayerData = (store, layerId) => store.immutable.scene.layers[layerId];
+const getLayer = (store, layerId) => store.mutable.layers[layerId];
+const getViewport = store => store.mutable.viewport;
+const getFrameTable = store => store.mutable.frameTable;
+const getTileSheetId = (store, layerId) => store.immutable.scene.layers[layerId].tileSheet;
+*/
 
-// combine game data with input, return sprites and associated render data
-const logic = (state, keys) => {
-  // playerLogic()
-  // handleCollisions
-  // viewportLogic()
-  return {};
-}
+getKeys, getLayerData, getLayer, getViewport, getFrameTable, getTileSheetId
 
-// this is where we'll loop over sprite and background data
-// and render to context
-const render = (context, renderData) => randomRects(context);
 
-const renderFixed2d = (context, layer, viewport, tileTable) =>
-  mapFixed2dRegion(layer, 512, viewport, (x, y, tileIndex) => {
+// Things to update: frameTable, entity positions, level state, stats/progress
+// entity positions depend on: player actions, ai, collisions, physics
+// playerLogic()
+// handleCollisions
+// viewportLogic depends on player
+
+const updatePhysics = entity => entity;
+const updateAi = entity => entity;
+const updateCollisions = entity => entity;
+
+const updateTiles = tileSetId => updateFrameTable(tileSetId, TARGET_FPS);
+
+const updateSprites = (layer, viewport) =>
+  mapFixed2dRegion(layer, 512, viewport, sprites =>
+    compose(updateCollisions, updateAi, updatePhysics, sprites));
+
+const updateFactory = store => () =>
+  Object.keys(store.immutable.scene.layers).forEach(layerId =>
+    (getLayerData(layerId).layoutType === 'FIXED_2D') ?
+      updateTiles(getTileSheetId(layerId), getViewport()) :
+      updateSprites(getLayer(layerId), getViewport()));
+
+const renderTiles = (context, layer, viewport, tileTable) =>
+  mapFixed2dRegion(layer, 512, viewport, (tileIndex, x, y) => {
     const tile = tileTable[tileIndex];
     if (tile) context.drawImage(tile, x * 16, y * 16);
   });
 
-const renderFree2d = (context, layer, viewport) => {
-  mapFixed2dRegion(layer, 512, viewport, (segmentX, segmentY, segment) => {
-  });
+const renderSprites = (context, sprites, viewport) => {
 }
 
-// Things to update: frameTable, entity positions, level state, stats/progress
-const updateData = () => updateFrameTable('smb-tiles', TARGET_FPS);
+const renderFactory = (store, context) => () => {
+  context.clearRect(0, 0, 256, 240);
+  Object.keys(store.immutable.scene.layers).forEach(layerId =>
+    (getLayerData(layerId).layoutType === 'FIXED_2D') ?
+      renderTiles(context, getLayer(layerId), getViewport(), getFrameTable()) :
+      renderSprites(context));
+}
 
 export default () => element => maybe(element, element =>
-  subscribeMutable(SCENE_READY, state => {
-    Looper(state.loop)('GAME_LOOP', () => {
-      const context = element.getContext('2d');
-      context.clearRect(0, 0, 246, 240);
-      updateData();
-      renderFixed2d(context, state.layers.background, state.viewport, state.frameTable);
-      /*render(
-        element.getContext('2d'),
-        logic(
-          state, 
-          getKeys(Inputer(state.input, element))
-        )
-      )*/
+  subscribe(SCENE_READY, store => {
+    const update = updateFactory(store);
+    const render = renderFactory(store, element.getContext('2d'));
+
+    Looper(store.mutable.loop)('GAME_LOOP', () => {
+      update();
+      render();
     })
   })
 );

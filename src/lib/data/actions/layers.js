@@ -1,4 +1,4 @@
-import { _immutableStore, publishMutable } from '../store.js';
+import { _store, publishMutable } from '../store.js';
 import { createFree2dSegments } from '../segments.js';
 
 export const INIT_LAYERS = 'INIT_LAYERS';
@@ -9,7 +9,7 @@ export const initLayers = (layers = {}) => publishMutable(INIT_LAYERS, layers);
 export const copyLayout = layerId => publishMutable(COPY_LAYOUT, layerId);
 
 export const createLayoutSegments = layerId => {
-  const scene = _immutableStore.state.scene;
+  const scene = _store.immutable.scene;
   const segments = createFree2dSegments(
     scene.layers[layerId].layout,
     scene.sceneWidth,

@@ -1,6 +1,6 @@
 import { INIT_INPUT } from '../actions/input';
-import { subscribeMutable } from '../store';
+import { subscribe } from '../store';
 
 export default () => {
-  subscribeMutable(INIT_INPUT, (state, inputData) => state.input = inputData);
+  subscribe(INIT_INPUT, (store, inputData) => store.mutable.input = inputData);
 }

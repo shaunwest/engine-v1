@@ -1,9 +1,9 @@
 import { RECEIVED_SCENE, RECEIVED_SCENE_ERROR, SCENE_READY } from '../actions/scene';
-import { subscribeImmutable, subscribeMutable } from '../store';
+import { subscribe } from '../store';
 
 export default () => {
-  subscribeImmutable(RECEIVED_SCENE, (state, scene) =>
-    Object.assign({}, state, { scene }));
+  subscribe(RECEIVED_SCENE, (store, scene) =>
+    Object.assign({}, store.immutable, { scene }));
 
-  subscribeMutable(SCENE_READY, state => state.ready = true);
+  subscribe(SCENE_READY, store => store.mutable.ready = true);
 };

@@ -1,3 +1,4 @@
+import poolPatcher from './pool';
 import loopPatcher from './loop';
 import viewportPatcher from './viewport';
 import frameTable from './frame-table';
@@ -8,6 +9,7 @@ import tileSheetsPatcher from './tile-sheets';
 import animationsPatcher from './animations';
 
 export default () => {
+  poolPatcher();
   loopPatcher();
   viewportPatcher();
   inputPatcher();

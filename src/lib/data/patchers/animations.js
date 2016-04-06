@@ -1,17 +1,17 @@
 import { INIT_ANIMATIONS, CREATED_ANIMATION } from '../actions/animations';
-import { subscribeMutable } from '../store';
+import { subscribe } from '../store';
 
 export default () => {
-  subscribeMutable(INIT_ANIMATIONS, (state, animations) => state.animations = animations);
+  subscribe(INIT_ANIMATIONS, (store, animations) => store.mutable.animations = animations);
 
-  subscribeMutable(CREATED_ANIMATION, (state, tileSheetId, index, name, animation) => {
-    if (!state.animations[tileSheetId]) {
-      state.animations[tileSheetId] = [];
+  subscribe(CREATED_ANIMATION, (store, tileSheetId, index, name, animation) => {
+    if (!store.mutable.animations[tileSheetId]) {
+      store.mutable.animations[tileSheetId] = [];
     }
   
-    if (!state.animations[tileSheetId][index]) {
-      state.animations[tileSheetId][index] = {};
+    if (!store.mutable.animations[tileSheetId][index]) {
+      store.mutable.animations[tileSheetId][index] = {};
     }
-    Object.assign(state.animations[tileSheetId][index], { [name]: animation });
+    Object.assign(store.mutable.animations[tileSheetId][index], { [name]: animation });
   });
 };

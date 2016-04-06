@@ -20,6 +20,7 @@ export const createAnimations = (tileSheetId, imageSheet, gameImageIndex, gameIm
       animationData.xRange
     );
 
+    // TODO: could probably go to immutable
     publishMutable(CREATED_ANIMATION, tileSheetId, gameImageIndex, name, animation);
   });
 };

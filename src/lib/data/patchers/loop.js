@@ -1,6 +1,6 @@
 import { INIT_LOOP } from '../actions/loop';
-import { subscribeMutable } from '../store.js';
+import { subscribe } from '../store.js';
 
 export default () => {
-  subscribeMutable(INIT_LOOP, (state, loopData) => state.loop = loopData);
+  subscribe(INIT_LOOP, (store, loopData) => store.mutable.loop = loopData);
 }

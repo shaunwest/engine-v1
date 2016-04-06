@@ -21,6 +21,7 @@ export const fetchTileSheetImage = imageSrc =>
   fetchImage('http://localhost:3000/assets/' + imageSrc)
     .then(
       img => {
+        // TODO: this could be published to immutable
         publishMutable(RECEIVED_TILE_SHEET_IMAGE, imageSrc, img);
         return img;
       },

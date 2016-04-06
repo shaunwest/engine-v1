@@ -1,12 +1,12 @@
 import { RECEIVED_TILE_SHEET, RECEIVED_TILE_SHEET_IMAGE } from '../actions/tile-sheets.js';
-import { subscribeImmutable, subscribeMutable } from '../store.js';
+import { subscribe } from '../store.js';
 
 export default () => {
-  subscribeImmutable(RECEIVED_TILE_SHEET, (state, tileSheetData) => {
-    const tileSheets = Object.assign({}, state.tileSheets, { [tileSheetData.id]: tileSheetData });
-    return Object.assign({}, state, { tileSheets });
+  subscribe(RECEIVED_TILE_SHEET, (store, tileSheetData) => {
+    const tileSheets = Object.assign({}, store.immutable.tileSheets, { [tileSheetData.id]: tileSheetData });
+    return Object.assign({}, store.immutable, { tileSheets });
   });
 
-  subscribeMutable(RECEIVED_TILE_SHEET_IMAGE, (state, src, tileSheetImage) =>
-    Object.assign(state, { tileSheetImages: { [src]: tileSheetImage } }));
+  subscribe(RECEIVED_TILE_SHEET_IMAGE, (store, src, tileSheetImage) =>
+    Object.assign(store.mutable, { tileSheetImages: { [src]: tileSheetImage } }));
 }
