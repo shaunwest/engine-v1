@@ -13,9 +13,14 @@ export const subscribe = createSub(_store);
 export const publishImmutable = createPubImmutable(_store);
 export const publishMutable = createPubMutable(_store);
 
-// Some helpers
-export const getLayerData = layerId => _store.immutable.scene.layers[layerId];
-export const getLayer = layerId => _store.mutable.layers[layerId];
-export const getViewport = () => _store.mutable.viewport;
-export const getFrameTable = () => _store.mutable.frameTable;
-export const getTileSheetId = layerId => _store.immutable.scene.layers[layerId].tileSheet;
+// Some helpful getters
+const getters = {
+  getLayerData: layerId => _store.immutable.scene.layers[layerId],
+  getLayer: layerId => _store.mutable.layers[layerId],
+  getViewport: () => _store.mutable.viewport,
+  getFrameTable: () => _store.mutable.frameTable,
+  getTileSheetId: layerId => _store.immutable.scene.layers[layerId].tileSheet,
+  getSpriteAnimations: layerId => _store.mutable.animations[_store.immutable.scene.layers[layerId].tileSheet]
+};
+
+Object.assign(_store, getters);

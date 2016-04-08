@@ -2,22 +2,13 @@ import Looper from 'base-utils/looper.js';
 import Inputer from 'base-utils/inputer.js';
 import { compose } from 'base-utils/func.js';
 import { maybe } from 'base-utils/functor';
-import { subscribe, getKeys, getLayerData, getLayer, 
-  getViewport, getFrameTable, getTileSheetId } from './data/store';
+import { subscribe } from './data/store';
+import { getObject, getArray, releaseAll } from 'base-utils/pool';
 import { SCENE_READY } from './data/actions/scene';
 import { updateFrameTable } from './data/actions/frame-table.js';
 import { mapFixed2dRegion } from './fixed-2d.js';
 
 const TARGET_FPS = 60;
-
-/*
-const getKeys = getInput => getInput().keysPressed;
-const getLayerData = (store, layerId) => store.immutable.scene.layers[layerId];
-const getLayer = (store, layerId) => store.mutable.layers[layerId];
-const getViewport = store => store.mutable.viewport;
-const getFrameTable = store => store.mutable.frameTable;
-const getTileSheetId = (store, layerId) => store.immutable.scene.layers[layerId].tileSheet;
-*/
 
 // Things to update: frameTable, entity positions, level state, stats/progress
 // entity positions depend on: player actions, ai, collisions, physics
@@ -25,47 +16,99 @@ const getTileSheetId = (store, layerId) => store.immutable.scene.layers[layerId]
 // handleCollisions
 // viewportLogic depends on player
 
+const updateAnimation = spriteData => {
+  spriteData.currentAnimationId = 'idle';
+  spriteData.currentFrameIndex = 0;
+  return spriteData;
+}
+
 const updatePhysics = entity => entity;
 const updateAi = entity => entity;
 const updateCollisions = entity => entity;
 
-const updateTiles = tileSetId => updateFrameTable(tileSetId, TARGET_FPS);
-
-const updateSprites = (layer, viewport) =>
-  mapFixed2dRegion(layer, 512, viewport, sprites =>
-    compose(updateCollisions, updateAi, updatePhysics, sprites));
-
-const updateFactory = store => () =>
-  Object.keys(store.immutable.scene.layers).forEach(layerId =>
-    (getLayerData(layerId).layoutType === 'FIXED_2D') ?
-      updateTiles(getTileSheetId(layerId), getViewport()) :
-      updateSprites(getLayer(layerId), getViewport()));
-
-const renderTiles = (context, layer, viewport, tileTable) =>
-  mapFixed2dRegion(layer, 512, viewport, (tileIndex, x, y) => {
-    const tile = tileTable[tileIndex];
-    if (tile) context.drawImage(tile, x * 16, y * 16);
-  });
-
-const renderSprites = (context, sprites, viewport) => {
+const updateSegments = (segments, fn) => {
+  const result = getArray();
+  for (const segment of segments) {
+    for (const spriteData of segment.value.values()) {
+      result.push(fn(spriteData));
+    }
+  }
+  return result;
 }
 
-const renderFactory = (store, context) => () => {
-  context.clearRect(0, 0, 256, 240);
-  Object.keys(store.immutable.scene.layers).forEach(layerId =>
-    (getLayerData(layerId).layoutType === 'FIXED_2D') ?
-      renderTiles(context, getLayer(layerId), getViewport(), getFrameTable()) :
-      renderSprites(context));
+/*
+const getTileData = (tileIndex, x, y) => {
+  const tileData = getObject();
+  tileData.tileIndex = tileIndex;
+  tileData.x = x;
+  tileData.y = y; 
+  return tileData;
 }
+*/
+
+const updateTiles = (layer, viewport) => mapFixed2dRegion(layer, 512, viewport);
+
+const updateSprites = (layer, viewport) => {
+  // TODO: width and height calculation can happen once, somewhere else
+  const region = {
+    x: viewport.x / 128,
+    y: viewport.y / 128,
+    width: viewport.width / 128,
+    height: viewport.height / 128
+  }
+  return updateSegments(mapFixed2dRegion(layer, 512 / 128, region), spriteData => 
+    compose(updateAnimation, updateCollisions, updateAi, updatePhysics, spriteData));
+}
+
+const updateFactory = store => layerId => {
+  if (store.getLayerData(layerId).layoutType === 'FIXED_2D') {
+    updateFrameTable(store.getTileSheetId(layerId), TARGET_FPS); // side-effects...sigh
+    return updateTiles(store.getLayer(layerId), store.getViewport());
+  } else {
+    return updateSprites(store.getLayer(layerId), store.getViewport());
+  }
+}
+
+const renderTiles = (context, tiles, viewport, tileTable) => {
+  for (const tileData of tiles) {
+    if (tileData) { 
+      const tile = tileTable[tileData.value];
+      if (tile) {
+        context.drawImage(tile, tileData.x * 16, tileData.y * 16);
+      }
+    }
+  }
+}
+
+const renderSprites = (context, sprites, viewport, spriteAnimations) => {
+  for (const sprite of sprites) {
+    const animationSet = spriteAnimations[sprite.id];
+    context.drawImage(
+      animationSet[sprite.currentAnimationId][sprite.currentFrameIndex],
+      sprite.x,
+      sprite.y
+    );
+  }
+}
+
+const renderFactory = (store, context) => (layerId, entities) =>
+  (store.getLayerData(layerId).layoutType === 'FIXED_2D') ?
+    renderTiles(context, entities, store.getViewport(), store.getFrameTable()) :
+    renderSprites(context, entities, store.getViewport(), store.getSpriteAnimations(layerId));
 
 export default () => element => maybe(element, element =>
   subscribe(SCENE_READY, store => {
+    const context = element.getContext('2d');
     const update = updateFactory(store);
-    const render = renderFactory(store, element.getContext('2d'));
+    const render = renderFactory(store, context);
 
     Looper(store.mutable.loop)('GAME_LOOP', () => {
-      update();
-      render();
+      context.clearRect(0, 0, 256, 240);
+
+      Object.keys(store.immutable.scene.layers).forEach(layerId =>
+        render(layerId, update(layerId)));
+
+      releaseAll();
     })
   })
 );

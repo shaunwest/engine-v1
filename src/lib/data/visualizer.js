@@ -24,6 +24,10 @@ const renderByObjectType = obj => {
     return renderValue('[Function]');
   }
 
+  if (isType(obj, 'Map')) {
+    return renderValue('[Map]');
+  }
+
   if (isType(obj, 'Array')) {
     return (obj.length < MAX_ARRAY_LENGTH) ?
       renderArray(obj) :

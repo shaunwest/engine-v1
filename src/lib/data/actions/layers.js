@@ -9,11 +9,11 @@ export const initLayers = (layers = {}) => publishMutable(INIT_LAYERS, layers);
 export const copyLayout = layerId => publishMutable(COPY_LAYOUT, layerId);
 
 export const createLayoutSegments = layerId => {
-  const scene = _store.immutable.scene;
+  const layer = _store.immutable.scene.layers[layerId];
   const segments = createFree2dSegments(
-    scene.layers[layerId].layout,
-    scene.sceneWidth,
-    scene.sceneHeight,
+    layer.layout,
+    layer.width,
+    layer.height,
     128 
   )
 
